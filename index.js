@@ -3,7 +3,14 @@ const cors = require("cors");
 const fetch = require("node-fetch");
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: "*",
+  methods: ["POST", "GET", "OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
+
+app.options("/grade", cors());
 app.use(express.json({ limit: "10mb" }));
 
 app.post("/grade", async (req, res) => {
