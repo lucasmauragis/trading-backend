@@ -4,12 +4,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-app.use(cors({
-  origin: "*",
-  methods: ["POST", "GET", "OPTIONS"],
-  allowedHeaders: ["Content-Type"]
-}));
-
+app.use(cors({ origin: "*", methods: ["POST", "GET", "OPTIONS"], allowedHeaders: ["Content-Type"] }));
 app.options("/grade", cors());
 app.use(express.json({ limit: "10mb" }));
 
@@ -25,8 +20,11 @@ app.post("/grade", async (req, res) => {
       body: JSON.stringify(req.body)
     });
     const text = await response.text();
+    const parsed = JSON.parse(text);
+    const content = parsed.content?.[0]?.text || "{}";
+    const match = content.match(/\{[\s\S]*\}/);
     res.setHeader("Content-Type", "application/json");
-    res.send(text);
+    res.send(match ? match[0] : "{}");
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
