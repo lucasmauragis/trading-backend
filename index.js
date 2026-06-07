@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 app.post("/grade", async (req, res) => {
   try {
@@ -17,11 +17,12 @@ app.post("/grade", async (req, res) => {
       },
       body: JSON.stringify(req.body)
     });
-    const data = await response.json();
-    res.json(data);
+    const text = await response.text();
+    res.setHeader("Content-Type", "application/json");
+    res.send(text);
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
 });
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, () => console.log("Running"));
